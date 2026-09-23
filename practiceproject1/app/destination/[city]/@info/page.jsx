@@ -1,9 +1,12 @@
+'use client'
+import { useParams } from 'next/navigation'
 import React from 'react'
 
-const page = () => {
+function page() {
+    const {city}=useParams()
   return (
-    <div className='text-white'>
-      Parallel Route
+    <div className='text-white mt-[100px] w-[50%]'>
+      {city} is the best city.
     </div>
   )
 }
