@@ -5,10 +5,13 @@ import React, { useState } from 'react'
 const page = () => {
 
   const [count, setCount] = useState<number>()
+  function fn(){
+
+  }
 
   return (
     <div>
-      <Button/>
+      <Button data="Ashu" action={fn}/>
     </div>
   )
 }
