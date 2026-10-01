@@ -7,9 +7,9 @@ interface Iuser {
     email: string,
     password: string,
     createdAt?: Date,
-    updatedAt?: Date
+    updatedAt?: Date,
+    userid: number
 }
-
 
 
 const userSchema = new mongoose.Schema<Iuser>({
@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema<Iuser>({
 
     password:{
         type: String,
+        required: true
+    },
+
+    userid:{
+        type: Number,
         required: true
     },
 
