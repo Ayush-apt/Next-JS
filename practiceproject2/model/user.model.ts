@@ -30,11 +30,6 @@ const userSchema = new mongoose.Schema<Iuser>({
         required: true
     },
 
-    userid:{
-        type: Number,
-        required: true
-    },
-
     image:{
         type: String
     }
