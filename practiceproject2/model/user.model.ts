@@ -38,6 +38,6 @@ const userSchema = new mongoose.Schema<Iuser>({
 
 const User = mongoose.model('User', userSchema)
 
-// Note : Will work on it (Sessional Break)
+// Note : Will work on it (Sessional Break) Day2
 
 export default User
