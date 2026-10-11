@@ -40,4 +40,4 @@ const User = mongoose.model('User', userSchema)
 
 export default User
 
-// Note : SICK 
+// Note : SICK (Day 2)
