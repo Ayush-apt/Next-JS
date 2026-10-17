@@ -24,8 +24,6 @@ const authOptions:NextAuthOptions={
 
     },
     secret:"",
-
-
 }
 
 export default authOptions
