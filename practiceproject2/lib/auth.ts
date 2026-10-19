@@ -2,14 +2,20 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./db";
 import User from "@/model/user.model";
+import bcrypt from "bcryptjs";
 
 const authOptions:NextAuthOptions={
     providers:[
+
+        GoogleProvider({
+
+        }),
+
         CredentialsProvider({
             name: "Credentials",
             credentials:{
-                email:{label,type:'text'},
-                password:{label, type:'password'}
+                email:{label:"Email",type:'text'},
+                password:{label:"Password", type:'password'}
             },
             async authorize(credentials, req) {
                 let email = credentials?.email
@@ -32,19 +38,49 @@ const authOptions:NextAuthOptions={
                     throw new Error("Incorrect Password");
                 }
 
+                return{
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image
+                }
             },
         })
     ],
     callbacks:{
+        async jwt({token, user}) {
+            if(user){
+                token.id = user.id
+                token.name = user.name
+                token.email = user.email
+                token.image = user.image
+            }
+            return token
+        },
 
+        session({session, token}){
+            if(session.user){
+                session.user.id = token.id as string
+                session.user.name = token.name
+                session.user.email = token.email
+                session.user.image = token.image as string
+            }
+            return session
+        }
     },
     session:{
-        
+        strategy: 'jwt',
+        maxAge: 30*24*60*60
     },
     pages:{
-
+        signIn: '/login',
+        error: '/login'
     },
-    secret:"",
+    secret:process.env.NEXT_AUTH_SECRET,
 }
 
 export default authOptions
+
+function GoogleProvider(arg0: {}): import("next-auth/providers/index").Provider {
+    throw new Error("Function not implemented.");
+}
