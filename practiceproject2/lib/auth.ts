@@ -3,12 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./db";
 import User from "@/model/user.model";
 import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 
 const authOptions:NextAuthOptions={
     providers:[
 
-        GoogleProvider({
-
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         }),
 
         CredentialsProvider({
@@ -48,6 +50,23 @@ const authOptions:NextAuthOptions={
         })
     ],
     callbacks:{
+
+        async signIn({account,user}) {
+            if(account?.provider=="google"){
+                await connectDB()
+
+                let existUser = await User.findOne({email: user?.email})
+                if(!existUser){
+                    existUser = await User.create({
+                        name: user.name,
+                        email: user?.email
+                    })
+                }
+                user.id = existUser._id as string
+            }
+            return true
+        },
+
         async jwt({token, user}) {
             if(user){
                 token.id = user.id
@@ -80,7 +99,3 @@ const authOptions:NextAuthOptions={
 }
 
 export default authOptions
-
-function GoogleProvider(arg0: {}): import("next-auth/providers/index").Provider {
-    throw new Error("Function not implemented.");
-}

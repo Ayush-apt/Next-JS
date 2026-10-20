@@ -9,7 +9,6 @@ const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter()
-    const session = useSession()
     
     const handleSignIn = async (e: React.SyntheticEvent<HTMLFormElement>) => {
       e.preventDefault()
@@ -20,9 +19,8 @@ const Login = () => {
           password,
           redirect: false,
         })
-        
-        console.log("Logged in",result)
-        console.log(session.data?.user)
+    
+        router.push("/")
 
       } catch (error) {
         console.log(error)
@@ -77,7 +75,14 @@ const Login = () => {
                     <hr className="grow border-gray-500"/>
                 </div>
 
-                <button className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-100 transition-colors'>
+                <button 
+                className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-100 transition-colors'
+                onClick={async ()=>{
+                  await signIn('google',{
+                    callbackUrl: "/"
+                  })
+                }}
+                >
                     <FcGoogle />
                     <span>Sign In With Google</span>
                 </button>

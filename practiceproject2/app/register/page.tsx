@@ -1,5 +1,6 @@
 'use client'
 import axios from "axios";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
@@ -83,7 +84,14 @@ const Register = () => {
                     <hr className="grow border-gray-500"/>
                 </div>
 
-                <button className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-100 transition-colors'>
+                <button 
+                className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-200 transition-colors'
+                onClick={async ()=>{
+                    await signIn('google',{
+                        callbackUrl: "/login"
+                    })
+                }}
+                >
                     <FcGoogle />
                     <span>Sign Up With Google</span>
                 </button>
