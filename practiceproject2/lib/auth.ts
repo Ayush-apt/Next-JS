@@ -67,13 +67,24 @@ const authOptions:NextAuthOptions={
             return true
         },
 
-        async jwt({token, user}) {
+        async jwt({token, user, trigger}) {
             if(user){
                 token.id = user.id
                 token.name = user.name
                 token.email = user.email
                 token.image = user.image
             }
+
+            // When session.update() is called from client, re-fetch user from DB
+            if(trigger === "update"){
+                await connectDB()
+                const dbUser = await User.findById(token.id)
+                if(dbUser){
+                    token.name = dbUser.name
+                    token.image = dbUser.image
+                }
+            }
+
             return token
         },
 
