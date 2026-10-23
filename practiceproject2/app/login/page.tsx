@@ -1,17 +1,20 @@
 'use client'
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
-
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
     
     const handleSignIn = async (e: React.SyntheticEvent<HTMLFormElement>) => {
       e.preventDefault()
+      setError("")
+      setLoading(true)
       
       try {
         const result = await signIn('credentials', {
@@ -20,10 +23,18 @@ const Login = () => {
           redirect: false,
         })
     
-        router.push("/")
+        if (result?.error) {
+          setError(result.error)
+          setLoading(false)
+        } else {
+          router.push("/")
+          router.refresh()
+        }
 
-      } catch (error) {
-        console.log(error)
+      } catch (err) {
+        console.log(err)
+        setError("Something went wrong during login")
+        setLoading(false)
       }
     }
 
@@ -34,12 +45,19 @@ const Login = () => {
 
                 <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
 
+                {error && (
+                    <div className="mb-4 p-2.5 text-sm text-center text-red-400 bg-red-950/60 border border-red-800 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
                 <form className="space-y-6" onSubmit={handleSignIn}>
 
                     <div>
                         <label className="block mb-1 font-medium">Email</label>
                         <input 
-                            type="text"
+                            type="email"
+                            required
                             placeholder="Enter Email"
                             className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
                             onChange={(e)=>setEmail(e.target.value)}
@@ -50,7 +68,8 @@ const Login = () => {
                     <div>
                         <label className="block mb-1 font-medium">Password</label>
                         <input 
-                            type="text"
+                            type="password"
+                            required
                             placeholder="Enter Password"
                             className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
                             onChange={(e)=>setPassword(e.target.value)}
@@ -58,14 +77,20 @@ const Login = () => {
                         />
                     </div>
 
-                    <p className="text-sm text-center mt-1" onClick={()=>{
+                    <p className="text-sm text-center mt-1 cursor-pointer" onClick={()=>{
                         router.push('/register')
                     }}>
                         Want to create an account ? <span
                         className="text-blue-400 hover:underline">Sign Up</span>
                     </p>
 
-                    <button className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors'>Login</button>
+                    <button 
+                        type="submit"
+                        disabled={loading}
+                        className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50'
+                    >
+                        {loading ? "Logging in..." : "Login"}
+                    </button>
 
                 </form>
 
@@ -76,6 +101,7 @@ const Login = () => {
                 </div>
 
                 <button 
+                type="button"
                 className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-100 transition-colors'
                 onClick={async ()=>{
                   await signIn('google',{

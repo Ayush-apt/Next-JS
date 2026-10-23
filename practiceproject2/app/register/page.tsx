@@ -6,22 +6,28 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 
 const Register = () => {
-
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     const handleRegister = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setError("")
+        setLoading(true)
+
         try {
-            const result = await axios.post('/api/auth/register',{
+            await axios.post('/api/auth/register', {
                 name, email, password
             })
-            console.log(result)
-
-        } catch(error) {
-            console.log(error)
+            router.push('/login')
+        } catch(err: any) {
+            console.log(err)
+            const message = err?.response?.data?.message || "Registration failed"
+            setError(message)
+            setLoading(false)
         }
     }
 
@@ -32,12 +38,19 @@ const Register = () => {
 
                 <h1 className="text-2xl font-semibold text-center mb-6">Register</h1>
 
+                {error && (
+                    <div className="mb-4 p-2.5 text-sm text-center text-red-400 bg-red-950/60 border border-red-800 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
                 <form className="space-y-6" onSubmit={handleRegister}>
 
                     <div>
                         <label className="block mb-1 font-medium">Name</label>
                         <input 
                             type="text"
+                            required
                             placeholder="Enter Name"
                             className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
                             onChange={(e)=>setName(e.target.value)}
@@ -48,7 +61,8 @@ const Register = () => {
                     <div>
                         <label className="block mb-1 font-medium">Email</label>
                         <input 
-                            type="text"
+                            type="email"
+                            required
                             placeholder="Enter Email"
                             className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
                             onChange={(e)=>setEmail(e.target.value)}
@@ -59,7 +73,8 @@ const Register = () => {
                     <div>
                         <label className="block mb-1 font-medium">Password</label>
                         <input 
-                            type="text"
+                            type="password"
+                            required
                             placeholder="Enter Password"
                             className="w-full border-b border-white py-2 px-1 bg-gray-900 text-white outline-none placeholder-gray-400"
                             onChange={(e)=>setPassword(e.target.value)}
@@ -67,14 +82,20 @@ const Register = () => {
                         />
                     </div>
 
-                    <p className="text-sm text-center mt-1" onClick={()=>{
+                    <p className="text-sm text-center mt-1 cursor-pointer" onClick={()=>{
                         router.push('/login')
                     }}>
                         Already have an account ? <span
                         className="text-blue-400 hover:underline">Login</span>
                     </p>
 
-                    <button className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors'>Register</button>
+                    <button 
+                        type="submit"
+                        disabled={loading}
+                        className='w-full py-2 px-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50'
+                    >
+                        {loading ? "Registering..." : "Register"}
+                    </button>
 
                 </form>
 
@@ -85,10 +106,11 @@ const Register = () => {
                 </div>
 
                 <button 
+                type="button"
                 className='w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-400 rounded-lg bg-white text-black hover:bg-gray-200 transition-colors'
                 onClick={async ()=>{
                     await signIn('google',{
-                        callbackUrl: "/login"
+                        callbackUrl: "/"
                     })
                 }}
                 >
