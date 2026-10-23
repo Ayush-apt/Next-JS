@@ -106,7 +106,7 @@ const authOptions:NextAuthOptions={
         signIn: '/login',
         error: '/login'
     },
-    secret:process.env.NEXT_AUTH_SECRET,
+    secret:process.env.NEXTAUTH_SECRET,
 }
 
 export default authOptions

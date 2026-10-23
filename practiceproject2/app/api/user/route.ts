@@ -7,21 +7,25 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req:NextRequest) {
     try {
         await connectDB()
+
         const session = await getServerSession(authOptions)
-        if(!session || !session.user.email || !session.user.id){
+
+        if (!session?.user?.email || !session?.user?.id) {
             return NextResponse.json(
-                {message: "User does not have session"},
-                {status:400}
+                { message: "Missing or invalid session", session },
+                { status: 401 }
             )
         }
-        
+
         const user = await User.findById(session.user.id).select("-password")
-        if(!user){            
+
+        if (!user) {
             return NextResponse.json(
-                {message: "User does not have session"},
-                {status:400}
+                { message: "User not found in MongoDB" },
+                { status: 404 }
             )
         }
+
         return NextResponse.json(
             user,
             {status : 200}
