@@ -291,8 +291,6 @@ practiceproject2/
 └── README.md                       # Project documentation
 ```
 
-*Note: The tree includes conventional configuration and asset paths. Retain only files and directories that actually exist in your repository.*
-
 ---
 
 ## 🚀 Getting Started
